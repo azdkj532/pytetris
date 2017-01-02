@@ -79,17 +79,16 @@ class GameBoard(object):
 
     def rotate(self, direction):
         """
-        Rotate the block, -1 for anticlockwise, 1 for clockwise
+        Rotate the block, left for anticlockwise, right for clockwise
         """
-        if direction == -1:
-            self.block.rotate('left')
-            if self._conflict_detact(self.current_block, self.current_block_pos) is not State.AllGreen:
-                self.block.rotate('right')
+        if direction not in ['right', 'left']:
+            raise ValueError('direction should be right or left')
 
-        elif direction == 1:
-            self.block.rotate('right')
-            if self._conflict_detact(self.current_block, self.current_block_pos) is not State.AllGreen:
-                self.block.rotate('left')
+        block = self.current_block
+        self.current_block = self.current_block.rotate(direction)
+
+        if self._conflict_detact() is not State.AllGreen:
+            self.current_block = block
 
     def __getitem__(self, pos):
         """

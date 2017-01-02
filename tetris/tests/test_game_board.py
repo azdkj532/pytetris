@@ -5,6 +5,8 @@ import unittest
 class TestBoardHelperFunctions(unittest.TestCase):
     def setUp(self):
         self.gameboard = game.GameBoard()
+        block = game.blocks.get_block('O')
+        self.gameboard.current_block = block
 
     def test_deposit_test(self):
         block = game.blocks.get_block('O')
@@ -68,6 +70,10 @@ class TestBoardHelperFunctions(unittest.TestCase):
         c_pos = (10, self.gameboard.width-2)
         self.assertEqual(self.gameboard._conflict_detact(block, c_pos), State.AllGreen)
 
+        block = game.blocks.get_block('I')
+        c_pos = (0, self.gameboard.width-1)
+        self.assertEqual(self.gameboard._conflict_detact(), State.AllGreen)
+
     def test_block_conflict_test(self):
         block = game.blocks.get_block('O')
         pos = (20, 0)
@@ -80,8 +86,31 @@ class TestBoardHelperFunctions(unittest.TestCase):
             State.ConflictWithBlock
         )
 
-    def test_rotate(self):
-        pass
+    def test_rotate_success(self):
+        block = game.blocks.get_block('I')
+        self.gameboard.current_block = block
+        
+        self.gameboard.rotate('left')
+        self.assertEqual(str(self.gameboard.current_block), str(block.rotate('left')))
+
+        self.gameboard.down()
+        self.assertEqual(self.gameboard.board[23][5], 1)
+        self.assertEqual(self.gameboard.board[23][6], 1)
+        self.assertEqual(self.gameboard.board[23][7], 1)
+        self.assertEqual(self.gameboard.board[23][8], 1)
+
+    def test_rotate_exception(self):
+        with self.assertRaises(ValueError):
+            self.gameboard.rotate('leftt')
+
+    def test_rotate_fail(self):
+        block = game.blocks.get_block('I')
+        self.gameboard.current_block = block
+        self.gameboard.current_block_pos = (self.gameboard.current_block_pos[0], self.gameboard.width - 1)
+        self.assertEqual(self.gameboard._conflict_detact(), State.AllGreen)
+        
+        self.gameboard.rotate('left')
+        self.assertEqual(str(self.gameboard.current_block), str(block)) # reject rotate
 
     def test_move(self):
         pass
