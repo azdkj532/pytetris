@@ -1,2 +1,1 @@
-from . import raw_blocks
-from . import blocks
+from . import game
