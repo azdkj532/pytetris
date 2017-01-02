@@ -68,3 +68,14 @@ class TestBlockHelperFunctions(unittest.TestCase):
             block = game.blocks.random_block()
             rotated = block.rotate('left').rotate('right')
             self.assertEqual(str(block), str(rotated))
+
+    def test_block_accessor(self):
+        block_matrix = [
+            [1, 2, 3, 4],
+            [5, 6, 7, 8],
+            [9, 0, 1, 2],
+            3, 4, 5, 6]
+        ]
+        block = game.blocks.Block(block=block_matrix)
+        for i in range(4):
+            self.assertEqual(block_matrix[i][i], block[i, i])

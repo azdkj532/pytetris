@@ -80,6 +80,16 @@ class Block(object):
         else:
             raise ValueError('`direction` should be either "left" or "right"')
 
+    def __getitem__(self, pos):
+        """
+        raw block accessor
+
+        p = block[0, 0]
+        """
+
+        x, y = pos
+        return self.block[x][y]
+
     def __repr__(self):
         return 'Block(%r)' % Block.compose_block(self.block)
 
