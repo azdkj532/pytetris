@@ -44,7 +44,7 @@ class GameBoard(object):
         return a bool indicate that is game over or not
         """
         for x in range(4):
-            for y in range(width):
+            for y in range(self.width):
                 if self.board[x][y] != 0:
                     return True
 
@@ -65,7 +65,7 @@ class GameBoard(object):
         """
 
         x, y = self.current_block_pos
-        next_block_pos = (x + direction, y)
+        next_block_pos = (x, y + direction)
 
         if self._conflict_detact(self.current_block, next_block_pos) is State.AllGreen:
             self.current_block_pos = next_block_pos

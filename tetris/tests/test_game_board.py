@@ -113,10 +113,31 @@ class TestBoardHelperFunctions(unittest.TestCase):
         self.assertEqual(str(self.gameboard.current_block), str(block)) # reject rotate
 
     def test_move(self):
-        pass
+        pos = self.gameboard.current_block_pos
+        self.gameboard.move(-1)
+        self.gameboard.move(1)
+        self.assertEqual(self.gameboard.current_block_pos, pos)
+
+        self.assertEqual(str(self.gameboard.current_block), str(game.blocks.get_block('O')))
+
+        self.gameboard.current_block_pos = (0, 0)
+        pos = self.gameboard.current_block_pos
+        self.gameboard.move(-1)
+        self.assertEqual(self.gameboard.current_block_pos, pos)
+
+        self.gameboard.current_block_pos = (0, self.gameboard.width-2)
+        pos = self.gameboard.current_block_pos
+        self.gameboard.move(1)
+        self.assertEqual(self.gameboard.current_block_pos, pos)
 
     def test_swap_block(self):
-        pass
+        block = self.gameboard.current_block
+        self.gameboard.swap_block()
+        self.gameboard.swap_block()
+
+        self.assertEqual(str(self.gameboard.current_block), str(block))
 
     def test_is_gameover(self):
-        pass
+        self.assertFalse(self.gameboard.is_gameover())
+        self.gameboard._make_deposit()
+        self.assertTrue(self.gameboard.is_gameover())
