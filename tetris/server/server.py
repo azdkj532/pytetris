@@ -13,6 +13,8 @@ from .user import User
 ASSETS_PATH = os.path.join(os.path.dirname(__file__), 'assets')
 VIEW_PATH = os.path.join(os.path.dirname(__file__), 'html')
 
+logger = logging.getLogger(__name__)
+
 # setup bottle template path
 view = functools.partial(view, template_lookup=[VIEW_PATH])
 
@@ -40,14 +42,14 @@ def assets(file):
 @sio.on('connect', namespace='/game')
 def connect(sid, environ):
     users[sid] = User(sid)
-    print('[+] User connected, sid = %s' % sid)
+    logger.info('[+] User connected, sid = %s' % sid)
 
 @sio.on('disconnect', namespace='/game')
 def disconnect(sid):
     game = users[sid].game
     if game: game.remove_user(sid)
     del users[sid]
-    print('[+] User disconnected, sid = %s' % sid)
+    logger.info('[+] User disconnected, sid = %s' % sid)
 
 # room control
 
@@ -63,7 +65,7 @@ def create_room(sid, *_):
     games[game.room_id] = game
     game.add_user(user)
 
-    print('[+] User %s created room %s' % (sid, game.room_id))
+    logger.info('[+] User %s created room %s' % (sid, game.room_id))
     sio.emit('room id', data=game.room_id, room=game.room_id, namespace='/game')
 
 @sio.on('join room', namespace='/game')
