@@ -77,6 +77,7 @@ def join_room(sid, room_id):
 
     game.add_user(user)
     sio.enter_room(user.sid, game.room_id, namespace='/game')
+    sio.emit('room id', data=game.room_id, room=game.room_id, namespace='/game')
 
 # user control
 @sio.on('set name', namespace='/game')
