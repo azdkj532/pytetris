@@ -1,6 +1,11 @@
-import sys, os
+import logging
+import os
+import sys
+
+logging.basicConfig(level=None)
+
 # setup path for tetris package
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+sys.path = [os.path.join(os.path.dirname(__file__), 'mocks')] + sys.path + [os.path.join(os.path.dirname(__file__), '../..')]
 
 import unittest
 
