@@ -28,9 +28,8 @@ games = {}
 users = {}
 
 @bottle.get('/')
-@view('index.html')
 def index():
-    pass
+    return static_file('index.html', root = VIEW_PATH)
 
 @bottle.get('/assets/<file:path>')
 def assets(file):
