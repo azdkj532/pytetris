@@ -1,2 +1,4 @@
 urwid
 bottle
+eventlet
+python-socketio
