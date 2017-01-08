@@ -12,6 +12,7 @@ import unittest
 # import tests
 from test_blocks import *
 from test_game_board import *
+from test_server import *
 
 if __name__ == '__main__':
     unittest.main()
