@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tetris Game</title>
+  <script src="assets/socket.io.js" integrity="sha256-lDaoGuONbVHFEV6ZW3GowBu4ECOTjDE14hleNVBvDW8=" crossorigin="anonymous"></script>
+</head>
+<body>
+  <h1>Hello, Tetris</h1>
+
+  <div id="message">
+  </div>
+
+  <div>
+    <button id="create_room">Create Room</button>
+  </div>
+
+  <div>
+    <button id="join_room">Join Room</button>
+    <label>
+      Room ID:
+      <input id="room_id" type="text" name="">
+    </label>
+  </div>
+
+  <div>
+    <button id="set_name">Set Name</button>
+    <label>
+      Name:
+      <input id="username" type="text" name="">
+    </label>
+  </div>
+
+  <script>
+    function msg(m) {
+      var e = document.createElement('p')
+      e.innerText = m
+      message.appendChild(e)
+    }
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port + '/game');
+
+    socket.on('connect', () => msg('Connected'))
+
+    socket.on('room id', (id) => msg('Your room id is ' + id))
+    socket.on('message', msg)
+
+    create_room.onclick = () => socket.emit('create room')
+    join_room.onclick = () => socket.emit('join room', room_id.value)
+    set_name.onclick = () => socket.emit('set name', username.value)
+  </script>
+</body>
+</html>
