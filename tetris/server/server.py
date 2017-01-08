@@ -51,6 +51,10 @@ def disconnect(sid):
     del users[sid]
     logger.info('[+] User disconnected, sid = %s' % sid)
 
+    if not game.players:
+        del games[game.room_id]
+        logger.info('Room %s removed' % game.room_id)
+
 # room control
 
 @sio.on('create room', namespace='/game')
