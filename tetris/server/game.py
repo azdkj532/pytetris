@@ -14,6 +14,12 @@ class Game(object):
         logger.info('[+] Broadcast message: %r' % message)
         self.sio.send(message, room=self.room_id, namespace='/game')
 
+    def shutdown(self):
+        self.broadcast('Goodbye')
+        for sid, user in self.players.items():
+            self.sio.disconnect(sid, namespace='/game')
+            del self.players[sid]
+
     def remove_user(self, sid):
         user = self.players.get(sid, None)
         if not user:
@@ -21,6 +27,10 @@ class Game(object):
 
         del self.players[sid]
         self.broadcast('User "%s" leaved' % user.name)
+
+        if user is self.owner:
+            self.broadcast('Game owner leaved, this game is shutting down.')
+            self.shutdown()
 
     def add_user(self, user):
         if user.game:
