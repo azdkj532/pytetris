@@ -3,51 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <title>Tetris Game</title>
-  <script src="assets/socket.io.js" integrity="sha256-lDaoGuONbVHFEV6ZW3GowBu4ECOTjDE14hleNVBvDW8=" crossorigin="anonymous"></script>
+  <script src="assets/socket.io.js"></script>
+  <script src="assets/vue-2.1.8.js"></script>
+  <script src="assets/vue-socketio.js"></script>
+  <link rel="stylesheet" href="assets/bootstrap-3.3.7/css/bootstrap.min.css" media="all">
 </head>
 <body>
-  <h1>Hello, Tetris</h1>
+  <div id="app"></div>
 
-  <div id="message">
-  </div>
+  <template id="app-t">
+    <div class="container">
+      <h2>Tetris Game</h2>
 
-  <div>
-    <button id="create_room">Create Room</button>
-  </div>
+      <div>
+        <p>
+          Room ID: <code>{{ room_id || "&lt; Please join a room or create one &gt;" }}</code>
+          <span v-if="joined_room && username_set">
+            Username: <code>{{ username }}</code>
+          </span>
+        </p>
+      </div>
 
-  <div>
-    <button id="join_room">Join Room</button>
-    <label>
-      Room ID:
-      <input id="room_id" type="text" name="">
-    </label>
-  </div>
+      <!-- join game -->
+      <div class="input-group" v-if="!joined_room">
+        <label for="room_id" class="input-group-addon">
+          Room ID:
+        </label>
+        <input type="text" id="room_id" class="form-control" v-model="join_room_id">
+        <span class="input-group-btn">
+          <button class="btn btn-primary" @click="join_room(join_room_id)">Join Room</button>
+          <button class="btn btn-success" @click="create_room">Create Room</button>
+        </span>
+      </div>
 
-  <div>
-    <button id="set_name">Set Name</button>
-    <label>
-      Name:
-      <input id="username" type="text" name="">
-    </label>
-  </div>
+      <!-- set username -->
+      <div class="input-group" v-if="joined_room && !username_set">
+        <label for="username" class="input-group-addon">
+          Username:
+        </label>
+        <input type="text" id="username" class="form-control" v-model="username">
+        <span class="input-group-btn">
+          <button class="btn btn-primary" @click="set_username(username)">Set Name</button>
+        </span>
+      </div>
 
-  <script>
-    function msg(m) {
-      var e = document.createElement('p')
-      e.innerText = m
-      message.appendChild(e)
-    }
+      <!-- we only show last 8 messages -->
+      <div class="messages">
+        <h2>Messages</h2>
 
-    var socket = io.connect('http://' + document.domain + ':' + location.port + '/game');
+        <ul>
+          <li v-for="(msg, idx) in messages" v-show="idx < 8">{{ msg }}</li>
+        </ul>
+      </div>
+    </div>
+  </template>
 
-    socket.on('connect', () => msg('Connected'))
-
-    socket.on('room id', (id) => msg('Your room id is ' + id))
-    socket.on('message', msg)
-
-    create_room.onclick = () => socket.emit('create room')
-    join_room.onclick = () => socket.emit('join room', room_id.value)
-    set_name.onclick = () => socket.emit('set name', username.value)
-  </script>
+  <!-- vuejs app code -->
+  <script src="assets/game.js"></script>
 </body>
 </html>
