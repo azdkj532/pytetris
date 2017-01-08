@@ -57,7 +57,7 @@ def create_room(sid, *_):
     if not user:
         return
 
-    game = Game(sio)
+    game = Game(sio, user)
     sio.enter_room(sid, game.room_id, namespace='/game')
 
     games[game.room_id] = game

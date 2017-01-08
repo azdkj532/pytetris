@@ -4,10 +4,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Game(object):
-    def __init__(self, sio, players=None, room_id=None):
-        # dict({user_id: User})
+    def __init__(self, sio, owner, players={}, room_id=None):
         self.sio = sio
-        self.players = players or {}
+        self.owner = owner
+        self.players = players or {} # dict({user_id: User})
         self.room_id = room_id or os.urandom(16).hex()
 
     def broadcast(self, message):
