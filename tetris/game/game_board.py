@@ -29,7 +29,7 @@ class GameBoard(object):
         """
         x, y = self.current_block_pos
         next_block_pos = (x+1, y)
-        next_state = self._conflict_detact(self.current_block, next_block_pos)
+        next_state = self._conflict_detect(self.current_block, next_block_pos)
 
         if next_state is State.AllGreen:
             self.current_block_pos = next_block_pos
@@ -67,7 +67,7 @@ class GameBoard(object):
         x, y = self.current_block_pos
         next_block_pos = (x, y + direction)
 
-        if self._conflict_detact(self.current_block, next_block_pos) is State.AllGreen:
+        if self._conflict_detect(self.current_block, next_block_pos) is State.AllGreen:
             self.current_block_pos = next_block_pos
 
     def down(self):
@@ -87,7 +87,7 @@ class GameBoard(object):
         block = self.current_block
         self.current_block = self.current_block.rotate(direction)
 
-        if self._conflict_detact() is not State.AllGreen:
+        if self._conflict_detect() is not State.AllGreen:
             self.current_block = block
 
     def __getitem__(self, pos):
@@ -104,7 +104,7 @@ class GameBoard(object):
         self.board = [[0 for y in range(self.width)] for x in range(self.height)]
 
     # Private functionis
-    def _conflict_detact(self, block=None, pos=None):
+    def _conflict_detect(self, block=None, pos=None):
         if block is None:
             block = self.current_block
         if pos is None:
@@ -116,7 +116,7 @@ class GameBoard(object):
                     offset = (row + pos[0], column + pos[1])
                     if not offset[0] < self.height:
                         return State.OutOfBoard
-                    
+
                     if not self.width > offset[1] >= 0:
                         return State.OutOfBoard
 
