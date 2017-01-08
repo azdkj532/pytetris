@@ -51,9 +51,10 @@ def disconnect(sid):
     del users[sid]
     logger.info('[+] User disconnected, sid = %s' % sid)
 
-    if not game.players:
-        del games[game.room_id]
-        logger.info('Room %s removed' % game.room_id)
+    for room_id, game in list(games.items()):
+        if not game.players:
+            del games[room_id]
+            logger.info('Room %s removed' % room_id)
 
 # room control
 

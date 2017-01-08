@@ -16,9 +16,12 @@ class Game(object):
 
     def shutdown(self):
         self.broadcast('Goodbye')
-        for sid, user in self.players.items():
+        for sid in list(self.players):
             self.sio.disconnect(sid, namespace='/game')
-            del self.players[sid]
+            try:
+                del self.players[sid]
+            except KeyError:
+                pass
 
     def remove_user(self, sid):
         user = self.players.get(sid, None)
