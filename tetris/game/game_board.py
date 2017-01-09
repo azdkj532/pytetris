@@ -103,6 +103,20 @@ class GameBoard(object):
     def clear(self):
         self.board = [[0 for y in range(self.width)] for x in range(self.height)]
 
+    def __str__(self):
+        out = ''
+        y, x = self.current_block_pos
+        for i, row in enumerate(self.board):
+            line = ''
+            for j, block in enumerate(row):
+                B = '#'
+                p = B if block else ' '
+                if i - y in range(4) and j - x in range(4) and self.current_block[i - y, j - x] == 'O':
+                    p = '@'
+                line += p
+            out += line + '\n'
+        return out
+
     # Private functionis
     def _conflict_detect(self, block=None, pos=None):
         if block is None:
