@@ -100,11 +100,11 @@ def set_name(sid, name):
         logger.info('[+] U:%s - User renamed from %r to %r' % (sid, old_name, name))
 
 @sio.on('start game', namespace='/game')
-def start_game(sid, name):
+def start_game(sid):
     user = users.get(sid, None)
 
-    if user and user.game and user is game.owner:
-        game.start()
+    if user and user.game and user is user.game.owner:
+        user.game.start()
 
 def start(host='0.0.0.0', port=8080):
     run(app=app, host=host, port=port, server='eventlet')
