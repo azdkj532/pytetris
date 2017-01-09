@@ -15,14 +15,18 @@ class Game(object):
         self.speed = speed # second(s)
 
     def work(self): # background worker
-        self.broadcast('Hello players, this is message from worker!!!')
+        for sid, user in self.players.items():
+            user.board.next_tick()
+            self.sio.emit('board state', data=str(user.board), room=sid, namespace='/game')
+            return not user.board.is_gameover()
 
     def worker_loop(self):
         try:
-            while True:
-                self.work()
+            while self.work():
                 greenthread.sleep(self.speed)
         except GreenletExit:
+            pass
+        finally:
             logger.debug('[*] R:%s - Worker exited' % self.room_id)
 
     def start(self): # start game
