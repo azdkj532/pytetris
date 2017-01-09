@@ -11,15 +11,17 @@ class Game(object):
         self.room_id = room_id or os.urandom(16).hex()
 
     def broadcast(self, message):
-        logger.info('[+] Broadcast message: %r' % message)
+        logger.debug('[+] R:%s - Broadcast message: %r' % (self.room_id, message))
         self.sio.send(message, room=self.room_id, namespace='/game')
 
     def shutdown(self):
         self.broadcast('Goodbye')
+        logger.info('[*] R:%s - Room shutting down' % self.room_id)
         for sid in list(self.players):
             self.sio.disconnect(sid, namespace='/game')
             try:
                 del self.players[sid]
+                logger.warn('[-] R:%s - KeyError (%r) while remove user from room' % (self.room_id, sid))
             except KeyError:
                 pass
 

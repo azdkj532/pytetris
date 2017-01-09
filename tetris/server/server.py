@@ -42,19 +42,19 @@ def assets(file):
 @sio.on('connect', namespace='/game')
 def connect(sid, environ):
     users[sid] = User(sid)
-    logger.info('[+] User connected, sid = %s' % sid)
+    logger.info('[+] U:%s - User connected' % sid)
 
 @sio.on('disconnect', namespace='/game')
 def disconnect(sid):
     game = users[sid].game
     if game: game.remove_user(sid)
     del users[sid]
-    logger.info('[+] User disconnected, sid = %s' % sid)
+    logger.info('[+] U:%s - User disconnected' % sid)
 
     for room_id, game in list(games.items()):
         if not game.players:
             del games[room_id]
-            logger.info('Room %s removed' % room_id)
+            logger.info('[+] R:%s - Room removed' % room_id)
 
 # room control
 
@@ -70,7 +70,7 @@ def create_room(sid, *_):
     games[game.room_id] = game
     game.add_user(user)
 
-    logger.info('[+] User %s created room %s' % (sid, game.room_id))
+    logger.info('[+] U:%s - User created room %s' % (sid, game.room_id))
     sio.emit('room id', data=game.room_id, room=game.room_id, namespace='/game')
 
 @sio.on('join room', namespace='/game')
@@ -84,6 +84,7 @@ def join_room(sid, room_id):
     game.add_user(user)
     sio.enter_room(user.sid, game.room_id, namespace='/game')
     sio.emit('room id', data=game.room_id, room=game.room_id, namespace='/game')
+    logger.info('[+] U:%s - User joined room %s' % (sid, room_id))
 
 # user control
 @sio.on('set name', namespace='/game')
@@ -96,6 +97,7 @@ def set_name(sid, name):
 
     if user.game:
         user.game.broadcast('User %s renamed to %s' % (old_name, name))
+        logger.info('[+] U:%s - User renamed from %r to %r' % (sid, old_name, name))
 
 def start(host='0.0.0.0', port=8080):
     run(app=app, host=host, port=port, server='eventlet')
