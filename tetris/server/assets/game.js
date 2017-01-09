@@ -1,13 +1,23 @@
 Vue.use(VueSocketio.default, 'http://' + document.domain + ':' + location.port + '/game')
 
+var DEFAULT_DATA = function (msg) {
+	return {
+		messages: msg || [],
+		join_room_id: '',
+		room_id: '',
+		joined_room: false,
+		username: '',
+		username_set: false
+	}
+}
+
 new Vue({
 	el: '#app',
 	template: '#app-t',
 
 	sockets: {
-		connect: function () {
-			this.msg('Connected')
-		},
+		connect: function () { this.msg('Connected'); this.reset() },
+		disconnect: function () { this.msg('Disconnected') },
 
 		message: function (msg) {
 			this.msg(msg)
@@ -22,6 +32,10 @@ new Vue({
 	},
 
 	methods: {
+		reset: function () {
+			Object.assign(this.$data, DEFAULT_DATA(this.messages))
+		},
+
 		msg: function (m) {
 			this.messages.unshift(m)
 		},
@@ -44,14 +58,5 @@ new Vue({
 		}
 	},
 
-	data: function () {
-		return {
-			messages: [],
-			join_room_id: '',
-			room_id: '',
-			joined_room: false,
-			username: '',
-			username_set: false
-		}
-	}
+	data: DEFAULT_DATA
 })
