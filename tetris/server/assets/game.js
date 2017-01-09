@@ -98,10 +98,10 @@ new Vue({
 					break
 				case 'ArrowUp':
 				case 'KeyK':
-					op = 'ROTATE_RIGHT'
+					op = 'ROTATE_LEFT'
 					break
 				case 'KeyJ':
-					op = 'ROTATE_LEFT'
+					op = 'ROTATE_RIGHT'
 					break
 			}
 			if(op) {
