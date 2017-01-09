@@ -20,6 +20,11 @@ new Vue({
 	created: function () {
 		this.$keyboard_event = this.keydown.bind(this)
 		window.addEventListener('keydown', this.$keyboard_event)
+
+		var room_id = location.hash.substr(1)
+		if(room_id.length > 0) {
+			this.join_room(room_id)
+		}
 	},
 	destroyed: function () {
 		window.removeEventListener('keydown', this.$keyboard_event)
@@ -106,5 +111,11 @@ new Vue({
 		}
 	},
 
-	data: DEFAULT_DATA
+	data: DEFAULT_DATA,
+
+	computed: {
+		game_url: function () {
+			return location.href.replace(/#.*$/, '') + '#' + this.room_id
+		}
+	}
 })

@@ -17,7 +17,14 @@
 
       <div>
         <p>
-          Room ID: <code>{{ room_id || "&lt; Please join a room or create one &gt;" }}</code>
+          Room ID:
+          <code>
+            <span v-if="room_id">
+              <a :href="game_url">{{ room_id }}</a>
+            </span>
+            <span v-else>&lt; Please join a room or create one &gt;</span>
+          </code>
+
           <span v-if="joined_room && username_set">
             Username: <code>{{ username }}</code>
           </span>
