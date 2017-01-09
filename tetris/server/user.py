@@ -1,5 +1,6 @@
 import time
 import logging
+from ..game import GameBoard
 
 logger = logging.getLogger(__name__)
 
@@ -8,7 +9,7 @@ class User(object):
         self.sid = sid
         self.name = name or ('User_%s' % sid[:12])
         self.game = None
-        self.board = None
+        self.board = GameBoard()
 
     def __repr__(self):
         return 'User(sid=%r, game=%r, name=%r, board=%r)' % (
