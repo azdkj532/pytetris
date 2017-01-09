@@ -7,7 +7,9 @@ var DEFAULT_DATA = function (msg) {
 		room_id: '',
 		joined_room: false,
 		username: '',
-		username_set: false
+		username_set: false,
+		board_state: '',
+		is_owner: false
 	}
 }
 
@@ -28,6 +30,10 @@ new Vue({
 			this.joined_room = true
 			this.room_id = id
 			this.msg('Join game room: ' + id)
+		},
+
+		'board state': function (state) {
+			this.board_state = state
 		}
 	},
 
@@ -42,6 +48,7 @@ new Vue({
 
 		create_room: function () {
 			this.$socket.emit('create room')
+			this.is_owner = true
 		},
 
 		join_room: function (id) {
@@ -55,6 +62,10 @@ new Vue({
 		set_username: function (name) {
 			this.username_set = true
 			this.$socket.emit('set name', name)
+		},
+
+		start_game: function () {
+			this.$socket.emit('start game')
 		}
 	},
 

@@ -47,6 +47,18 @@
         </span>
       </div>
 
+      <div class="game-control" v-if="is_owner">
+        <p>
+          <button class="btn btn-primary" :disabled="!username_set" @click="start_game">Start Game</button>
+          <code v-if="!username_set">Please set username first</code>
+        </p>
+      </div>
+
+      <!-- gameboard -->
+      <div class="game-board" v-if="board_state">
+        <pre>{{ board_state }}</pre>
+      </div>
+
       <!-- we only show last 8 messages -->
       <div class="messages">
         <h2>Messages</h2>
