@@ -13,12 +13,17 @@ class Game(object):
         self.room_id = room_id or os.urandom(16).hex()
         self.worker = None # GreenThread
         self.speed = speed # second(s)
+        self.started = False
 
     def work(self): # background worker
         for sid, user in self.players.items():
-            user.board.next_tick()
+            with user.board_lock:
+                user.board.next_tick()
             self.sio.emit('board state', data=str(user.board), room=sid, namespace='/game')
-            return not user.board.is_gameover()
+            if user.board.is_gameover():
+                return False
+
+        return True
 
     def worker_loop(self):
         try:
@@ -30,7 +35,11 @@ class Game(object):
             logger.debug('[*] R:%s - Worker exited' % self.room_id)
 
     def start(self): # start game
+        if self.started:
+            return
+        self.started = True
         self.worker = greenthread.spawn(self.worker_loop)
+        self.broadcast('Game Start!')
 
     def broadcast(self, message):
         logger.debug('[+] R:%s - Broadcast message: %r' % (self.room_id, message))

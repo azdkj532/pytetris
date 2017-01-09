@@ -108,5 +108,14 @@ def start_game(sid):
     else:
         sio.send('Error: You are not game owner or you don\'t have game', namespace='/game', room=sid)
 
+@sio.on('game input', namespace='/game')
+def game_input(sid, op):
+    user = users.get(sid, None)
+
+    if user and user.game and user.game.started:
+        user.send(op)
+    else:
+        sio.send('Error: Game not started', namespace='/game', room=sid)
+
 def start(host='0.0.0.0', port=8080):
     run(app=app, host=host, port=port, server='eventlet')

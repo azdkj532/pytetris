@@ -17,6 +17,14 @@ new Vue({
 	el: '#app',
 	template: '#app-t',
 
+	created: function () {
+		this.$keyboard_event = this.keydown.bind(this)
+		window.addEventListener('keydown', this.$keyboard_event)
+	},
+	destroyed: function () {
+		window.removeEventListener('keydown', this.$keyboard_event)
+	},
+
 	sockets: {
 		connect: function () { this.msg('Connected'); this.reset() },
 		disconnect: function () { this.msg('Disconnected') },
@@ -66,6 +74,35 @@ new Vue({
 
 		start_game: function () {
 			this.$socket.emit('start game')
+		},
+
+		keydown: function (e) {
+			var op = null
+
+			switch(e.code) {
+				case 'Space':
+					op = 'BOOM'
+					break
+				case 'ArrowLeft':
+				case 'KeyH':
+					op = 'MOVE_LEFT'
+					break
+				case 'ArrowRight':
+				case 'KeyL':
+					op = 'MOVE_RIGHT'
+					break
+				case 'ArrowUp':
+				case 'KeyK':
+					op = 'ROTATE_RIGHT'
+					break
+				case 'KeyJ':
+					op = 'ROTATE_LEFT'
+					break
+			}
+			if(op) {
+				console.log('Fire: ' + op)
+				this.$socket.emit('game input', op)
+			}
 		}
 	},
 
