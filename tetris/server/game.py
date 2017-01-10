@@ -15,11 +15,16 @@ class Game(object):
         self.speed = speed # second(s)
         self.started = False
 
+    def emit(self, event, data, *args, **kwargs):
+        event = kwargs.pop('event', event)
+        data = kwargs.pop('data', data)
+        self.sio.emit(event, data, *args, room=self.room_id, namespace='/game', **kwargs)
+
     def work(self): # background worker
         for sid, user in self.players.items():
             with user.board_lock:
                 user.board.next_tick()
-            self.sio.emit('board state', data=str(user.board), room=sid, namespace='/game')
+            user.emit('board state', str(user.board))
             if user.board.is_gameover():
                 return False
 

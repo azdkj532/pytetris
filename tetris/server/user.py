@@ -8,7 +8,8 @@ from eventlet.semaphore import Semaphore
 logger = logging.getLogger(__name__)
 
 class User(object):
-    def __init__(self, sid, name=None, game=None, board=None):
+    def __init__(self, sio, sid, name=None, game=None, board=None):
+        self.sio = sio
         self.sid = sid
         self.name = name or ('User_%s' % sid[:12])
         self.game = None
@@ -22,6 +23,11 @@ class User(object):
             'ROTATE_LEFT': functools.partial(self.board.rotate, 'left')
         }
 
+    def emit(self, event, data, *args, **kwargs):
+        event = kwargs.pop('event', event)
+        data = kwargs.pop('data', data)
+        self.sio.emit(event, data, *args, room=self.sid, namespace='/game', **kwargs)
+
     def send(self, op):
         act = self.op_map.get(op, None)
         if not act:
@@ -32,7 +38,7 @@ class User(object):
             self.report_state()
 
     def report_state(self):
-        self.game.sio.emit('board state', data=str(self.board), room=self.sid, namespace='/game')
+        self.emit('board state', str(self.board))
 
     def __repr__(self):
         return 'User(sid=%r, game=%r, name=%r, board=%r)' % (

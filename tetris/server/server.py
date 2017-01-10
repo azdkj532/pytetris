@@ -41,7 +41,7 @@ def assets(file):
 
 @sio.on('connect', namespace='/game')
 def connect(sid, environ):
-    users[sid] = User(sid)
+    users[sid] = User(sio, sid)
     logger.info('[+] U:%s - User connected' % sid)
 
 @sio.on('disconnect', namespace='/game')
@@ -71,7 +71,7 @@ def create_room(sid, *_):
     game.add_user(user)
 
     logger.info('[+] U:%s - User created room %s' % (sid, game.room_id))
-    sio.emit('room id', data=game.room_id, room=game.room_id, namespace='/game')
+    game.emit('room id', game.room_id)
 
 @sio.on('join room', namespace='/game')
 def join_room(sid, room_id):
@@ -83,7 +83,7 @@ def join_room(sid, room_id):
 
     game.add_user(user)
     sio.enter_room(user.sid, game.room_id, namespace='/game')
-    sio.emit('room id', data=game.room_id, room=game.room_id, namespace='/game')
+    game.emit('room id', game.room_id)
     logger.info('[+] U:%s - User joined room %s' % (sid, room_id))
 
 # user control
