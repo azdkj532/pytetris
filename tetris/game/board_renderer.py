@@ -67,22 +67,22 @@ class JSONRenderer(Renderer):
     def __init__(self, *args):
         super().__init__(*args)
 
-    def renderer(self):
+    def render(self):
         board = deepcopy(self.board.board)
         curr_block = self.board.current_block
-        x, y = self.board.current_block_pos
+        y, x = self.board.current_block_pos
 
-        for i in range(4):
-            for j in range(4):
-                if curr_block[x, y] == 'O':
-                    board[i + y][j + x] = 2
+        for row in range(4):
+            for col in range(4):
+                if curr_block[row, col] == 'O':
+                    board[row + y][col + x] = 2
 
         data = {
             'board': board,
             'next_block': self.board.next_block.block
         }
 
-        return json.dumps(data)
+        return data
 
     def __str__(self):
-        return self.renderer
+        return json.dumps(self.render())
