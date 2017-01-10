@@ -110,6 +110,9 @@ new Vue({
 				case 'KeyK':
 					op = 'ROTATE_LEFT'
 					break
+				case 'ArrowDown':
+					op = 'DOWN'
+					break
 				case 'KeyJ':
 					op = 'ROTATE_RIGHT'
 					break

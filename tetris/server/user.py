@@ -22,7 +22,8 @@ class User(object):
             'MOVE_LEFT': functools.partial(self.board.move, -1),
             'MOVE_RIGHT': functools.partial(self.board.move, 1),
             'ROTATE_RIGHT': functools.partial(self.board.rotate, 'right'),
-            'ROTATE_LEFT': functools.partial(self.board.rotate, 'left')
+            'ROTATE_LEFT': functools.partial(self.board.rotate, 'left'),
+            'DOWN': self.board.next_tick
         }
 
     def emit(self, event, data, *args, **kwargs):
