@@ -109,8 +109,7 @@ def join_room(user, room_id):
 # user control
 @user_event('set name')
 def set_name(user, name):
-    old_name = user.name
-    user.name = name
+    old_name, user.name = user.name, name
 
     if user.game:
         user.game.broadcast('User %s renamed to %s' % (old_name, name))
