@@ -51,15 +51,15 @@ class GameBoard(object):
 
         if self.is_gameover():
             self.freeze = True
-            return False
+            return BoolState(False, 'gameover')
 
         if next_state is State.AllGreen:
             self.current_block_pos = next_block_pos
-            return False
+            return BoolState(False, 'step')
 
         elif next_state is State.ConflictWithBlock or next_state is State.OutOfBoard:
             self._make_deposit()
-            return True
+            return BoolState(True, 'deposit')
 
 
     def is_gameover(self):
