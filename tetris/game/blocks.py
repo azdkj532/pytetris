@@ -59,13 +59,14 @@ class Block(object):
     def compose_block(block):
         return '\n'.join( ''.join(s) for s in block )
 
-    def __init__(self, raw_block=None, block=None):
+    def __init__(self, raw_block=None, block=None, type_=None):
         if raw_block:
             self.block = Block.parse_block(raw_block)
         elif block:
             self.block = block
         else:
             raise ValueError('Either `raw_block` or `block` must be given')
+        self.type = type_
 
     def rotate(self, direction):
         """
@@ -74,9 +75,9 @@ class Block(object):
         direction -- can be 'left' or 'right'
         """
         if direction == 'left':
-            return Block(block=normalize(rotate_left(self.block)))
+            return Block(block=normalize(rotate_left(self.block)), type_=self.type)
         elif direction == 'right':
-            return Block(block=normalize(rotate_right(self.block)))
+            return Block(block=normalize(rotate_right(self.block)), type_=self.type)
         else:
             raise ValueError('`direction` should be either "left" or "right"')
 
