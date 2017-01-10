@@ -1,6 +1,6 @@
 from copy import deepcopy
 from tetris import game
-from tetris.game.game_board import State, BoolState
+from tetris.game.game_board import State
 import unittest
 
 class TestBoardHelperFunctions(unittest.TestCase):
@@ -14,17 +14,17 @@ class TestBoardHelperFunctions(unittest.TestCase):
         self.gameboard.current_block = block
         self.gameboard.current_block_pos = (20, 0)
         self.gameboard._make_deposit()
-
-        self.assertEqual(self.gameboard.board[20][0], 1)
-        self.assertEqual(self.gameboard.board[20][0], 1)
-        self.assertEqual(self.gameboard.board[20][1], 1)
-        self.assertEqual(self.gameboard.board[20][2], 0)
-        self.assertEqual(self.gameboard.board[21][0], 1)
-        self.assertEqual(self.gameboard.board[21][1], 1)
-        self.assertEqual(self.gameboard.board[21][2], 0)
-        self.assertEqual(self.gameboard.board[22][0], 0)
-        self.assertEqual(self.gameboard.board[22][1], 0)
-        self.assertEqual(self.gameboard.board[22][2], 0)
+        
+        self.assertEqual(self.gameboard._board[20][0], 1)
+        self.assertEqual(self.gameboard._board[20][0], 1)
+        self.assertEqual(self.gameboard._board[20][1], 1)
+        self.assertEqual(self.gameboard._board[20][2], 0)
+        self.assertEqual(self.gameboard._board[21][0], 1)
+        self.assertEqual(self.gameboard._board[21][1], 1)
+        self.assertEqual(self.gameboard._board[21][2], 0)
+        self.assertEqual(self.gameboard._board[22][0], 0)
+        self.assertEqual(self.gameboard._board[22][1], 0)
+        self.assertEqual(self.gameboard._board[22][2], 0)
 
     def test_block_next_tick(self):
         pos = self.gameboard.current_block_pos
@@ -38,15 +38,15 @@ class TestBoardHelperFunctions(unittest.TestCase):
         self.gameboard.current_block = block
         self.gameboard.down()
 
-        self.assertEqual(self.gameboard.board[21][5], 0)
-        self.assertEqual(self.gameboard.board[21][6], 0)
-        self.assertEqual(self.gameboard.board[21][7], 0)
-        self.assertEqual(self.gameboard.board[22][5], 1)
-        self.assertEqual(self.gameboard.board[22][6], 1)
-        self.assertEqual(self.gameboard.board[22][7], 0)
-        self.assertEqual(self.gameboard.board[23][5], 1)
-        self.assertEqual(self.gameboard.board[23][6], 1)
-        self.assertEqual(self.gameboard.board[23][7], 0)
+        self.assertEqual(self.gameboard._board[21][5], 0)
+        self.assertEqual(self.gameboard._board[21][6], 0)
+        self.assertEqual(self.gameboard._board[21][7], 0)
+        self.assertEqual(self.gameboard._board[22][5], 1)
+        self.assertEqual(self.gameboard._board[22][6], 1)
+        self.assertEqual(self.gameboard._board[22][7], 0)
+        self.assertEqual(self.gameboard._board[23][5], 1)
+        self.assertEqual(self.gameboard._board[23][6], 1)
+        self.assertEqual(self.gameboard._board[23][7], 0)
 
 
     def test_bottom_conflict_test(self):
@@ -90,15 +90,15 @@ class TestBoardHelperFunctions(unittest.TestCase):
     def test_rotate_success(self):
         block = game.blocks.get_block('I')
         self.gameboard.current_block = block
-
+        
         self.gameboard.rotate('left')
         self.assertEqual(str(self.gameboard.current_block), str(block.rotate('left')))
 
         self.gameboard.down()
-        self.assertEqual(self.gameboard.board[23][5], 1)
-        self.assertEqual(self.gameboard.board[23][6], 1)
-        self.assertEqual(self.gameboard.board[23][7], 1)
-        self.assertEqual(self.gameboard.board[23][8], 1)
+        self.assertEqual(self.gameboard._board[23][5], 1)
+        self.assertEqual(self.gameboard._board[23][6], 1)
+        self.assertEqual(self.gameboard._board[23][7], 1)
+        self.assertEqual(self.gameboard._board[23][8], 1)
 
     def test_rotate_exception(self):
         with self.assertRaises(ValueError):
@@ -109,7 +109,7 @@ class TestBoardHelperFunctions(unittest.TestCase):
         self.gameboard.current_block = block
         self.gameboard.current_block_pos = (self.gameboard.current_block_pos[0], self.gameboard.width - 1)
         self.assertEqual(self.gameboard._conflict_detect(), State.AllGreen)
-
+        
         self.gameboard.rotate('left')
         self.assertEqual(str(self.gameboard.current_block), str(block)) # reject rotate
 
@@ -151,25 +151,18 @@ class TestBoardHelperFunctions(unittest.TestCase):
         nfull[0] = 0
         self.assertNotEqual(full, nfull)
 
-        self.gameboard.board[-1] = deepcopy(full)
-        self.gameboard.board[-2] = deepcopy(full)
-        self.gameboard.board[-3] = deepcopy(nfull)
-        self.gameboard.board[-4] = deepcopy(full)
-        self.gameboard.board[-5] = deepcopy(nfull)
+        self.gameboard._board[-1] = deepcopy(full)
+        self.gameboard._board[-2] = deepcopy(full)
+        self.gameboard._board[-3] = deepcopy(nfull)
+        self.gameboard._board[-4] = deepcopy(full)
+        self.gameboard._board[-5] = deepcopy(nfull)
 
         self.gameboard.down()
 
-        self.assertEqual(self.gameboard.board[-1], nfull)
-        self.assertEqual(self.gameboard.board[-2], nfull)
-        self.assertEqual(self.gameboard.board[-3], top)
+        self.assertEqual(self.gameboard._board[-1], nfull)
+        self.assertEqual(self.gameboard._board[-2], nfull)
+        self.assertEqual(self.gameboard._board[-3], top)
 
+    def test_board_api(self):
+        self.assertEqual(self.gameboard.board, self.gameboard._board)
 
-    def test_bool_state(self):
-        for obj in (False, 0, [], {}, set(), (), ""):
-            if BoolState(obj):
-                self.fail('BoolState(%r) becomes True!' % obj)
-        for obj in (True, 0xc8763, [1], {1}, {1:2}, (1,), "TETRIS"):
-            if BoolState(obj):
-                pass
-            else:
-                self.fail('BoolState(%r) becomes False!' % obj)

@@ -32,7 +32,7 @@ class GameBoard(object):
         self.width = _width
 
         # (0, 0) is leftest and highest corner
-        self.board = [[0 for y in range(self.width)] for x in range(self._height)]
+        self._board = [[0 for y in range(self.width)] for x in range(self._height)]
 
         self.current_block_pos = (0, int(self.width/2))
         self.current_block = blocks.random_block()
@@ -69,7 +69,7 @@ class GameBoard(object):
         """
         for x in range(4):
             for y in range(self.width):
-                if self.board[x][y] != 0:
+                if self._board[x][y] != 0:
                     return True
 
         return False
@@ -129,15 +129,19 @@ class GameBoard(object):
         p = block[0, 0]
         """
         x, y = pos
-        return self.board[x][y]
+        return self._board[x][y]
+
+    @property
+    def board(self):
+        return deepcopy(self._board)
 
     def clear(self):
-        self.board = [[0 for y in range(self.width)] for x in range(self._height)]
+        self._board = [[0 for y in range(self.width)] for x in range(self._height)]
 
     def __str__(self):
         out = ''
         y, x = self.current_block_pos
-        for i, row in enumerate(self.board):
+        for i, row in enumerate(self._board):
             line = ''
             for j, block in enumerate(row):
                 B = '#'
@@ -165,7 +169,7 @@ class GameBoard(object):
                     if not self.width > offset[1] >= 0:
                         return State.OutOfBoard
 
-                    if self.board[offset[0]][offset[1]] > 0:
+                    if self._board[offset[0]][offset[1]] > 0:
                         return State.ConflictWithBlock
 
         return State.AllGreen
@@ -183,7 +187,7 @@ class GameBoard(object):
             for column in range(4):
                 offset = (row + pos[0], column + pos[1])
                 if block[row, column] == 'O':
-                    self.board[offset[0]][offset[1]] = 1
+                    self._board[offset[0]][offset[1]] = 1
 
         self.current_block = self.next_block
         self.current_block_pos = (0, int(self.width/2))
@@ -191,11 +195,11 @@ class GameBoard(object):
 
         # clean the line
         remap = []
-        for line in self.board:
+        for line in self._board:
             if not all(line):
                 remap.append(line)
 
         for idx, line in enumerate(reversed(remap)):
-            self.board[-idx-1] = deepcopy(line)
+            self._board[-idx-1] = deepcopy(line)
 
         self.remap = remap
