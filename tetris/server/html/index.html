@@ -54,7 +54,7 @@
         </span>
       </div>
 
-      <div class="game-control" v-if="is_owner">
+      <div class="game-control" v-if="is_owner && !board_state">
         <p>
           <button class="btn btn-primary" :disabled="!username_set" @click="start_game">Start Game</button>
           <code v-if="!username_set">Please set username first</code>
