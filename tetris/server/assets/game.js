@@ -15,6 +15,34 @@ var DEFAULT_DATA = function (msg) {
 	}
 }
 
+Vue.component('block', {
+	template: '#block-t',
+	props: ['block'],
+	computed: {
+		background: function () {
+			switch(this.block) {
+				case 1:
+					return '#a33'
+				case 2:
+					return '#3a3'
+				case 'O':
+					return '#39f'
+			}
+			return ''
+		}
+	}
+})
+
+Vue.component('row', {
+	template: '#row-t',
+	props: ['row']
+})
+
+Vue.component('board', {
+	template: '#board-t',
+	props: ['board']
+})
+
 new Vue({
 	el: '#app',
 	template: '#app-t',

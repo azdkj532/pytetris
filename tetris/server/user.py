@@ -15,7 +15,7 @@ class User(object):
         self.name = name or ('User_%s' % sid[:12])
         self.game = None
         self.board = GameBoard()
-        self.renderer = TextRenderer(self.board)
+        self.renderer = JSONRenderer(self.board)
         self.board_lock = Semaphore(1)
         self.op_map = {
             'BOOM': self.board.down,
@@ -41,7 +41,7 @@ class User(object):
             self.report_state()
 
     def report_state(self):
-        self.emit('board state', str(self.renderer))
+        self.emit('board state', self.renderer.render())
 
     def __repr__(self):
         return 'User(sid=%r, game=%r, name=%r, board=%r)' % (
