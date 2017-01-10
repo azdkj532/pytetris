@@ -14,7 +14,7 @@ class TestBoardHelperFunctions(unittest.TestCase):
         self.gameboard.current_block = block
         self.gameboard.current_block_pos = (20, 0)
         self.gameboard._make_deposit()
-        
+
         self.assertEqual(self.gameboard.board[20][0], 1)
         self.assertEqual(self.gameboard.board[20][0], 1)
         self.assertEqual(self.gameboard.board[20][1], 1)
@@ -90,7 +90,7 @@ class TestBoardHelperFunctions(unittest.TestCase):
     def test_rotate_success(self):
         block = game.blocks.get_block('I')
         self.gameboard.current_block = block
-        
+
         self.gameboard.rotate('left')
         self.assertEqual(str(self.gameboard.current_block), str(block.rotate('left')))
 
@@ -109,7 +109,7 @@ class TestBoardHelperFunctions(unittest.TestCase):
         self.gameboard.current_block = block
         self.gameboard.current_block_pos = (self.gameboard.current_block_pos[0], self.gameboard.width - 1)
         self.assertEqual(self.gameboard._conflict_detect(), State.AllGreen)
-        
+
         self.gameboard.rotate('left')
         self.assertEqual(str(self.gameboard.current_block), str(block)) # reject rotate
 
