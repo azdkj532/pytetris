@@ -3,6 +3,7 @@ Vue.use(VueSocketio.default, 'http://' + document.domain + ':' + location.port +
 var DEFAULT_DATA = function (msg) {
 	return {
 		messages: msg || [],
+		uid: '',
 		join_room_id: '',
 		room_id: '',
 		joined_room: false,
@@ -34,6 +35,7 @@ new Vue({
 	sockets: {
 		connect: function () { this.msg('Connected'); this.reset() },
 		disconnect: function () { this.msg('Disconnected') },
+		'user id': function (id) { this.uid = id },
 
 		message: function (msg) {
 			this.msg(msg)

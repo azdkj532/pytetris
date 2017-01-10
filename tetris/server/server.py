@@ -41,8 +41,10 @@ def assets(file):
 
 @sio.on('connect', namespace='/game')
 def connect(sid, environ):
-    users[sid] = User(sio, sid)
+    user = User(sio, sid)
+    users[sid] = user
     logger.info('[+] U:%s - User connected' % sid)
+    user.emit('user id', sid)
 
 @sio.on('disconnect', namespace='/game')
 def disconnect(sid):
