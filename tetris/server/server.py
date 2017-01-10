@@ -94,11 +94,11 @@ def create_room(user, *_):
     logger.info('[+] U:%s - User created room %s' % (user.sid, game.room_id))
     game.emit('room id', game.room_id)
 
-@user_event('join room')
+@user_event('join room', pre_cond=lambda user: not user.game)
 def join_room(user, room_id):
     game = games.get(room_id, None)
 
-    if not game or user.game:
+    if not game:
         return
 
     game.add_user(user)
