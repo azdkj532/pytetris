@@ -9,7 +9,8 @@ var DEFAULT_DATA = function (msg) {
 		username: '',
 		username_set: false,
 		board_state: '',
-		is_owner: false
+		is_owner: false,
+		gameover: false
 	}
 }
 
@@ -47,6 +48,10 @@ new Vue({
 
 		'board state': function (state) {
 			this.board_state = state
+		},
+
+		'game over': function () {
+			this.gameover = true
 		}
 	},
 
@@ -82,6 +87,9 @@ new Vue({
 		},
 
 		keydown: function (e) {
+			if(this.gameover)
+				return
+
 			var op = null
 
 			switch(e.code) {
@@ -104,6 +112,7 @@ new Vue({
 					op = 'ROTATE_RIGHT'
 					break
 			}
+
 			if(op) {
 				console.log('Fire: ' + op)
 				this.$socket.emit('game input', op)
