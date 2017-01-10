@@ -27,11 +27,12 @@ class GameBoard(object):
         add first block and next block
         """
 
-        self.height = _height + 4
+        self.height = _height
+        self._height = _height + 4 # for inner use, add hidden row on it
         self.width = _width
 
         # (0, 0) is leftest and highest corner
-        self.board = [[0 for y in range(self.width)] for x in range(self.height)]
+        self.board = [[0 for y in range(self.width)] for x in range(self._height)]
 
         self.current_block_pos = (0, int(self.width/2))
         self.current_block = blocks.random_block()
@@ -127,12 +128,11 @@ class GameBoard(object):
 
         p = block[0, 0]
         """
-
         x, y = pos
         return self.board[x][y]
 
     def clear(self):
-        self.board = [[0 for y in range(self.width)] for x in range(self.height)]
+        self.board = [[0 for y in range(self.width)] for x in range(self._height)]
 
     def __str__(self):
         out = ''
@@ -159,7 +159,7 @@ class GameBoard(object):
             for column in range(4):
                 if block[row, column] == 'O':
                     offset = (row + pos[0], column + pos[1])
-                    if not offset[0] < self.height:
+                    if not offset[0] < self._height:
                         return State.OutOfBoard
 
                     if not self.width > offset[1] >= 0:

@@ -54,7 +54,7 @@ class TestBoardHelperFunctions(unittest.TestCase):
         c_pos = (40, 0)
         self.assertEqual(self.gameboard._conflict_detect(block, c_pos), State.OutOfBoard)
 
-        c_pos = (self.gameboard.height, 0)
+        c_pos = (self.gameboard._height, 0)
         self.assertEqual(self.gameboard._conflict_detect(block, c_pos), State.OutOfBoard)
 
         c_pos = (10, 0)
