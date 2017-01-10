@@ -24,7 +24,7 @@ class Game(object):
         for sid, user in self.players.items():
             with user.board_lock:
                 user.board.next_tick()
-            user.emit('board state', str(user.board))
+                user.report_state()
             if user.board.is_gameover():
                 return False
 
