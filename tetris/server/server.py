@@ -29,6 +29,25 @@ games = {}
 # dict({user_id: User})
 users = {}
 
+def user_event(*args, **kwargs):
+    def wrapper(func):
+        def hook(sid, *args):
+            user = users.get(sid, None)
+            if user:
+                func(user, *args)
+        namespace = kwargs.pop('namespace', '/game')
+        sio.on(*args, namespace=namespace, **kwargs)(hook)
+    return wrapper
+
+def game_event(*args, **kwargs):
+    def wrapper(func):
+        def hook(user, *args):
+            if user.game:
+                func(user, user.game, *args)
+        namespace = kwargs.pop('namespace', '/game')
+        user_event(*args, namespace=namespace, **kwargs)(hook)
+    return wrapper
+
 @bottle.get('/')
 def index():
     return static_file('index.html', root = VIEW_PATH)
@@ -60,64 +79,52 @@ def disconnect(sid):
 
 # room control
 
-@sio.on('create room', namespace='/game')
-def create_room(sid, *_):
-    user = users.get(sid, None)
-    if not user:
-        return
-
+@user_event('create room')
+def create_room(user, *_):
     game = Game(sio, user)
-    sio.enter_room(sid, game.room_id, namespace='/game')
+    sio.enter_room(user.sid, game.room_id, namespace='/game')
 
     games[game.room_id] = game
     game.add_user(user)
 
-    logger.info('[+] U:%s - User created room %s' % (sid, game.room_id))
+    logger.info('[+] U:%s - User created room %s' % (user.sid, game.room_id))
     game.emit('room id', game.room_id)
 
-@sio.on('join room', namespace='/game')
-def join_room(sid, room_id):
+@user_event('join room')
+def join_room(user, room_id):
     game = games.get(room_id, None)
-    user = users.get(sid, None)
 
-    if not game or not user or user.game:
+    if not game or user.game:
         return
 
     game.add_user(user)
     sio.enter_room(user.sid, game.room_id, namespace='/game')
     game.emit('room id', game.room_id)
-    logger.info('[+] U:%s - User joined room %s' % (sid, room_id))
+    logger.info('[+] U:%s - User joined room %s' % (user.sid, room_id))
 
 # user control
-@sio.on('set name', namespace='/game')
-def set_name(sid, name):
-    user = users.get(sid, None)
-    if not user:
-        return
+@user_event('set name')
+def set_name(user, name):
     old_name = user.name
     user.name = name
 
     if user.game:
         user.game.broadcast('User %s renamed to %s' % (old_name, name))
-        logger.info('[+] U:%s - User renamed from %r to %r' % (sid, old_name, name))
+        logger.info('[+] U:%s - User renamed from %r to %r' % (user.sid, old_name, name))
 
-@sio.on('start game', namespace='/game')
-def start_game(sid):
-    user = users.get(sid, None)
-
-    if user and user.game and user is user.game.owner:
+@game_event('start game')
+def start_game(user, game):
+    if user is user.game.owner:
         user.game.start()
     else:
-        sio.send('Error: You are not game owner or you don\'t have game', namespace='/game', room=sid)
+        sio.send('Error: You are not game owner or you don\'t have game', namespace='/game', room=user.sid)
 
-@sio.on('game input', namespace='/game')
-def game_input(sid, op):
-    user = users.get(sid, None)
-
-    if user and user.game and user.game.started:
+@game_event('game input')
+def game_input(user, game, op):
+    if user.game.started:
         user.send(op)
     else:
-        sio.send('Error: Game not started', namespace='/game', room=sid)
+        sio.send('Error: Game not started', namespace='/game', room=user.sid)
 
 def start(host='0.0.0.0', port=8080):
     run(app=app, host=host, port=port, server='eventlet')
