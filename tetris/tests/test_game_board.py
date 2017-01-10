@@ -1,6 +1,6 @@
 from copy import deepcopy
 from tetris import game
-from tetris.game.game_board import State
+from tetris.game.game_board import State, BoolState
 import unittest
 
 class TestBoardHelperFunctions(unittest.TestCase):
@@ -163,3 +163,13 @@ class TestBoardHelperFunctions(unittest.TestCase):
         self.assertEqual(self.gameboard.board[-2], nfull)
         self.assertEqual(self.gameboard.board[-3], top)
 
+
+    def test_bool_state(self):
+        for obj in (False, 0, [], {}, set(), (), ""):
+            if BoolState(obj):
+                self.fail('BoolState(%r) becomes True!' % obj)
+        for obj in (True, 0xc8763, [1], {1}, {1:2}, (1,), "TETRIS"):
+            if BoolState(obj):
+                pass
+            else:
+                self.fail('BoolState(%r) becomes False!' % obj)

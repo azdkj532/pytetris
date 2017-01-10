@@ -7,6 +7,20 @@ class State:
     OutOfBoard = 1
     ConflictWithBlock = 2
 
+class BoolState(object):
+    def __init__(self, bool_, status=None):
+        self.status = status
+        self.bool_ = bool(bool_)
+
+    def __bool__(self):
+        return self.bool_
+
+    def __str__(self):
+        return str(self.status)
+
+    def __repr__(self):
+        return 'BoolState(bool_=%r, status=%r)' % (self.bool_, self.status)
+
 class GameBoard(object):
     def __init__(self, _width = 10, _height=20):
         """
