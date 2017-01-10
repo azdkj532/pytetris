@@ -23,7 +23,7 @@ class GameBoard(object):
         self.current_block = blocks.random_block()
         self.next_block = blocks.random_block()
 
-        self.remap = []
+        self.freeze = False
 
     # Game control related API
 
@@ -34,6 +34,10 @@ class GameBoard(object):
         x, y = self.current_block_pos
         next_block_pos = (x+1, y)
         next_state = self._conflict_detect(self.current_block, next_block_pos)
+
+        if self.is_gameover():
+            self.freeze = True
+            return False
 
         if next_state is State.AllGreen:
             self.current_block_pos = next_block_pos
@@ -68,6 +72,8 @@ class GameBoard(object):
         """
         direction: -1 for left, 1 for right
         """
+        if self.freeze:
+            return
 
         x, y = self.current_block_pos
         next_block_pos = (x, y + direction)
@@ -79,6 +85,9 @@ class GameBoard(object):
         """
         put down current block immediately
         """
+        if self.freeze:
+            return
+
         while not self.next_tick():
             pass
 
@@ -86,6 +95,9 @@ class GameBoard(object):
         """
         Rotate the block, left for anticlockwise, right for clockwise
         """
+        if self.freeze:
+            return
+
         if direction not in ['right', 'left']:
             raise ValueError('direction should be right or left')
 
