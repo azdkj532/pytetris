@@ -31,19 +31,23 @@ users = {}
 
 def user_event(*args, **kwargs):
     def wrapper(func):
+        pre_cond = kwargs.pop('pre_cond', None)
         def hook(sid, *args):
             user = users.get(sid, None)
-            if user:
-                func(user, *args)
+            if not user or (pre_cond and not pre_cond(user)):
+                return
+            func(user, *args)
         namespace = kwargs.pop('namespace', '/game')
         sio.on(*args, namespace=namespace, **kwargs)(hook)
     return wrapper
 
 def game_event(*args, **kwargs):
     def wrapper(func):
+        pre_cond = kwargs.pop('pre_cond', None)
         def hook(user, *args):
-            if user.game:
-                func(user, user.game, *args)
+            if not user.game or (pre_cond and not pre_cond(user, user.game)):
+                return
+            func(user, user.game, *args)
         namespace = kwargs.pop('namespace', '/game')
         user_event(*args, namespace=namespace, **kwargs)(hook)
     return wrapper
@@ -112,19 +116,13 @@ def set_name(user, name):
         user.game.broadcast('User %s renamed to %s' % (old_name, name))
         logger.info('[+] U:%s - User renamed from %r to %r' % (user.sid, old_name, name))
 
-@game_event('start game')
+@game_event('start game', pre_cond=lambda user, game: user is game.owner)
 def start_game(user, game):
-    if user is user.game.owner:
-        user.game.start()
-    else:
-        sio.send('Error: You are not game owner or you don\'t have game', namespace='/game', room=user.sid)
+    user.game.start()
 
-@game_event('game input')
+@game_event('game input', pre_cond=lambda user, game: game.started)
 def game_input(user, game, op):
-    if user.game.started:
-        user.send(op)
-    else:
-        sio.send('Error: Game not started', namespace='/game', room=user.sid)
+    user.send(op)
 
 def start(host='0.0.0.0', port=8080):
     run(app=app, host=host, port=port, server='eventlet')
