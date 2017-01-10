@@ -51,28 +51,28 @@ class TestBoardHelperFunctions(unittest.TestCase):
     def test_bottom_conflict_test(self):
         block = game.blocks.get_block('O')
         c_pos = (40, 0)
-        self.assertEqual(self.gameboard._conflict_detact(block, c_pos), State.OutOfBoard)
+        self.assertEqual(self.gameboard._conflict_detect(block, c_pos), State.OutOfBoard)
 
         c_pos = (self.gameboard.height, 0)
-        self.assertEqual(self.gameboard._conflict_detact(block, c_pos), State.OutOfBoard)
+        self.assertEqual(self.gameboard._conflict_detect(block, c_pos), State.OutOfBoard)
 
         c_pos = (10, 0)
-        self.assertEqual(self.gameboard._conflict_detact(block, c_pos), State.AllGreen)
+        self.assertEqual(self.gameboard._conflict_detect(block, c_pos), State.AllGreen)
 
     def test_edge_conflict_test(self):
         block = game.blocks.get_block('O')
         c_pos = (10, self.gameboard.width)
-        self.assertEqual(self.gameboard._conflict_detact(block, c_pos), State.OutOfBoard)
+        self.assertEqual(self.gameboard._conflict_detect(block, c_pos), State.OutOfBoard)
 
         c_pos = (10, -1)
-        self.assertEqual(self.gameboard._conflict_detact(block, c_pos), State.OutOfBoard)
+        self.assertEqual(self.gameboard._conflict_detect(block, c_pos), State.OutOfBoard)
 
         c_pos = (10, self.gameboard.width-2)
-        self.assertEqual(self.gameboard._conflict_detact(block, c_pos), State.AllGreen)
+        self.assertEqual(self.gameboard._conflict_detect(block, c_pos), State.AllGreen)
 
         block = game.blocks.get_block('I')
         c_pos = (0, self.gameboard.width-1)
-        self.assertEqual(self.gameboard._conflict_detact(), State.AllGreen)
+        self.assertEqual(self.gameboard._conflict_detect(), State.AllGreen)
 
     def test_block_conflict_test(self):
         block = game.blocks.get_block('O')
@@ -82,7 +82,7 @@ class TestBoardHelperFunctions(unittest.TestCase):
         self.gameboard._make_deposit(block, pos)
 
         self.assertEqual(
-            self.gameboard._conflict_detact(block, pos),
+            self.gameboard._conflict_detect(block, pos),
             State.ConflictWithBlock
         )
 
@@ -107,7 +107,7 @@ class TestBoardHelperFunctions(unittest.TestCase):
         block = game.blocks.get_block('I')
         self.gameboard.current_block = block
         self.gameboard.current_block_pos = (self.gameboard.current_block_pos[0], self.gameboard.width - 1)
-        self.assertEqual(self.gameboard._conflict_detact(), State.AllGreen)
+        self.assertEqual(self.gameboard._conflict_detect(), State.AllGreen)
         
         self.gameboard.rotate('left')
         self.assertEqual(str(self.gameboard.current_block), str(block)) # reject rotate
