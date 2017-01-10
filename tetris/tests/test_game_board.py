@@ -1,3 +1,4 @@
+from copy import deepcopy
 from tetris import game
 from tetris.game.game_board import State
 import unittest
@@ -141,3 +142,24 @@ class TestBoardHelperFunctions(unittest.TestCase):
         self.assertFalse(self.gameboard.is_gameover())
         self.gameboard._make_deposit()
         self.assertTrue(self.gameboard.is_gameover())
+
+    def test_line_erase(self):
+        block = game.blocks.get_block('O')
+        top = [0, 0, 0, 0, 0, 1, 1, 0, 0, 0]
+        full = [1] * self.gameboard.width
+        nfull = deepcopy(full)
+        nfull[0] = 0
+        self.assertNotEqual(full, nfull)
+
+        self.gameboard.board[-1] = deepcopy(full)
+        self.gameboard.board[-2] = deepcopy(full)
+        self.gameboard.board[-3] = deepcopy(nfull)
+        self.gameboard.board[-4] = deepcopy(full)
+        self.gameboard.board[-5] = deepcopy(nfull)
+
+        self.gameboard.down()
+
+        self.assertEqual(self.gameboard.board[-1], nfull)
+        self.assertEqual(self.gameboard.board[-2], nfull)
+        self.assertEqual(self.gameboard.board[-3], top)
+

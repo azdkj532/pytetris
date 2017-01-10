@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from . import blocks
 
 class State:
@@ -21,6 +23,8 @@ class GameBoard(object):
         self.current_block = blocks.random_block()
         self.next_block = blocks.random_block()
 
+        self.remap = []
+
     # Game control related API
 
     def next_tick(self):
@@ -38,6 +42,7 @@ class GameBoard(object):
         elif next_state is State.ConflictWithBlock or next_state is State.OutOfBoard:
             self._make_deposit()
             return True
+
 
     def is_gameover(self):
         """
@@ -157,3 +162,14 @@ class GameBoard(object):
         self.current_block = self.next_block
         self.current_block_pos = (0, int(self.width/2))
         self.next_block = blocks.random_block()
+
+        # clean the line
+        remap = []
+        for line in self.board:
+            if not all(line):
+                remap.append(line)
+
+        for idx, line in enumerate(reversed(remap)):
+            self.board[-idx-1] = deepcopy(line)
+
+        self.remap = remap
