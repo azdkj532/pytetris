@@ -16,10 +16,8 @@ class TestBoardPublicAPI(unittest.TestCase):
 
         self.assertEqual(expect_pos, self.gameboard.current_block_pos)
 
-    def test_down_test(self):
-        block = game.blocks.get_block('O')
-        self.gameboard.current_block = block
-        self.gameboard.down()
+    def test_deposit_test(self):
+        self.gameboard.deposit()
 
         self.assertEqual(self.gameboard._board[-3][5], 0)
         self.assertEqual(self.gameboard._board[-3][6], 0)
@@ -115,7 +113,7 @@ class TestBlockRotate(unittest.TestCase):
 
     def test_rotate_deposit(self):
         self.gameboard.rotate('left')
-        self.gameboard.down()
+        self.gameboard.deposit()
         self.assertEqual(self.gameboard._board[-1][5], 1)
         self.assertEqual(self.gameboard._board[-1][6], 1)
         self.assertEqual(self.gameboard._board[-1][7], 1)
@@ -224,7 +222,7 @@ class TestBoardHelperFunctions(unittest.TestCase):
         self.gameboard._board[-4] = deepcopy(full)
         self.gameboard._board[-5] = deepcopy(nfull)
 
-        self.gameboard.down()
+        self.gameboard.deposit()
 
         self.assertEqual(self.gameboard._board[-1], nfull)
         self.assertEqual(self.gameboard._board[-2], nfull)

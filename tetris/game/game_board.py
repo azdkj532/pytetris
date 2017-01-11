@@ -106,6 +106,12 @@ class GameBoard(object):
 
     def down(self):
         """
+        move down 1 line immediately
+        """
+        self.next_tick()
+
+    def deposit(self):
+        """
         put down current block immediately
         """
         if self.freeze:
