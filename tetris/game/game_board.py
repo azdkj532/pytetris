@@ -90,8 +90,16 @@ class GameBoard(object):
         if self.freeze:
             return
 
+        if direction not in ['right', 'left']:
+            raise ValueError('direction should be right or left')
+
         x, y = self.current_block_pos
-        next_block_pos = (x, y + direction)
+        if direction == 'left':
+            next_block_pos = (x, y - 1)
+
+        if direction == 'right':
+            direction = 1
+            next_block_pos = (x, y + 1)
 
         if self._conflict_detect(self.current_block, next_block_pos) is State.AllGreen:
             self.current_block_pos = next_block_pos

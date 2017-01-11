@@ -52,20 +52,20 @@ class TestBlocksMoving(unittest.TestCase):
 
     def test_basic_move(self):
         pos = self.gameboard.current_block_pos
-        self.gameboard.move(-1)
-        self.gameboard.move(1)
+        self.gameboard.move('left')
+        self.gameboard.move('right')
         self.assertEqual(self.gameboard.current_block_pos, pos)
 
     def test_move_fail_left_edge(self):
         self.gameboard.current_block_pos = (0, 0)
         pos = self.gameboard.current_block_pos
-        self.gameboard.move(-1)
+        self.gameboard.move('left')
         self.assertEqual(self.gameboard.current_block_pos, pos)
 
     def test_move_fail_right_edge(self):
         self.gameboard.current_block_pos = (0, self.gameboard.width-2)
         pos = self.gameboard.current_block_pos
-        self.gameboard.move(1)
+        self.gameboard.move('right')
         self.assertEqual(self.gameboard.current_block_pos, pos)
 
     def test_move_fail_right_blocks(self):
@@ -76,7 +76,7 @@ class TestBlocksMoving(unittest.TestCase):
         pos = self.gameboard.current_block_pos
         
         # test target
-        self.gameboard.move(1)
+        self.gameboard.move('right')
         self.assertEqual(self.gameboard.current_block_pos, pos)
 
     def test_move_fail_left_blocks(self):
@@ -87,7 +87,7 @@ class TestBlocksMoving(unittest.TestCase):
         pos = self.gameboard.current_block_pos
         
         # test target
-        self.gameboard.move(-1)
+        self.gameboard.move('left')
         self.assertEqual(self.gameboard.current_block_pos, pos)
 
 class TestBlockRotate(unittest.TestCase):
