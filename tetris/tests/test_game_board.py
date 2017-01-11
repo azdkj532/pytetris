@@ -100,6 +100,18 @@ class TestBlocksMoving(unittest.TestCase):
         self.gameboard.move('right')
         self.assertEqual(self.gameboard.current_block_pos, (pos[0], pos[1]+1))
 
+    def test_down(self):
+        pos = self.gameboard.current_block_pos
+
+        self.gameboard.down()
+        self.assertEqual(self.gameboard.current_block_pos, (pos[0]+1, pos[1]))
+
+    def test_down_and_deposit(self):
+        self.gameboard.current_block_pos = (self.gameboard._height-2 ,4)
+        self.gameboard.down()
+        self.gameboard._board[-2] = [0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+        self.gameboard._board[-1] = [0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+
 
 class TestBlockRotate(unittest.TestCase):
     def setUp(self):
