@@ -31,50 +31,6 @@ class TestBoardPublicAPI(unittest.TestCase):
         self.assertEqual(self.gameboard._board[-1][6], 1)
         self.assertEqual(self.gameboard._board[-1][7], 0)
 
-    def test_rotate_success(self):
-        block = game.blocks.get_block('I')
-        self.gameboard.current_block = block
-        
-        self.gameboard.rotate('left')
-        self.assertEqual(str(self.gameboard.current_block), str(block.rotate('left')))
-
-        self.gameboard.down()
-        self.assertEqual(self.gameboard._board[-1][5], 1)
-        self.assertEqual(self.gameboard._board[-1][6], 1)
-        self.assertEqual(self.gameboard._board[-1][7], 1)
-        self.assertEqual(self.gameboard._board[-1][8], 1)
-
-    def test_rotate_exception(self):
-        with self.assertRaises(ValueError):
-            self.gameboard.rotate('leftt')
-
-    def test_rotate_fail(self):
-        block = game.blocks.get_block('I')
-        self.gameboard.current_block = block
-        self.gameboard.current_block_pos = (self.gameboard.current_block_pos[0], self.gameboard.width - 1)
-        self.assertEqual(self.gameboard._conflict_detect(), State.AllGreen)
-        
-        self.gameboard.rotate('left')
-        self.assertEqual(str(self.gameboard.current_block), str(block)) # reject rotate
-
-    def test_move(self):
-        pos = self.gameboard.current_block_pos
-        self.gameboard.move(-1)
-        self.gameboard.move(1)
-        self.assertEqual(self.gameboard.current_block_pos, pos)
-
-        self.assertEqual(str(self.gameboard.current_block), str(game.blocks.get_block('O')))
-
-        self.gameboard.current_block_pos = (0, 0)
-        pos = self.gameboard.current_block_pos
-        self.gameboard.move(-1)
-        self.assertEqual(self.gameboard.current_block_pos, pos)
-
-        self.gameboard.current_block_pos = (0, self.gameboard.width-2)
-        pos = self.gameboard.current_block_pos
-        self.gameboard.move(1)
-        self.assertEqual(self.gameboard.current_block_pos, pos)
-
     def test_swap_block(self):
         block = self.gameboard.current_block
         self.gameboard.swap_block()
@@ -86,6 +42,98 @@ class TestBoardPublicAPI(unittest.TestCase):
         self.assertFalse(self.gameboard.is_gameover())
         self.gameboard._make_deposit()
         self.assertTrue(self.gameboard.is_gameover())
+
+
+class TestBlocksMoving(unittest.TestCase):
+    def setUp(self):
+        self.gameboard = game.GameBoard()
+        block = game.blocks.get_block('O')
+        self.gameboard.current_block = block
+
+    def test_basic_move(self):
+        pos = self.gameboard.current_block_pos
+        self.gameboard.move(-1)
+        self.gameboard.move(1)
+        self.assertEqual(self.gameboard.current_block_pos, pos)
+
+    def test_move_fail_left_edge(self):
+        self.gameboard.current_block_pos = (0, 0)
+        pos = self.gameboard.current_block_pos
+        self.gameboard.move(-1)
+        self.assertEqual(self.gameboard.current_block_pos, pos)
+
+    def test_move_fail_right_edge(self):
+        self.gameboard.current_block_pos = (0, self.gameboard.width-2)
+        pos = self.gameboard.current_block_pos
+        self.gameboard.move(1)
+        self.assertEqual(self.gameboard.current_block_pos, pos)
+
+    def test_move_fail_right_blocks(self):
+        self.gameboard._board[-3] = [1, 1, 1, 1, 0, 0, 1, 1, 1, 1]
+        self.gameboard._board[-2] = [1, 1, 1, 1, 0, 0, 1, 1, 1, 1]
+        self.gameboard._board[-1] = [1, 1, 1, 1, 0, 0, 1, 1, 1, 1]
+        self.gameboard.current_block_pos = (self.gameboard._height-3 ,4)
+        pos = self.gameboard.current_block_pos
+        
+        # test target
+        self.gameboard.move(1)
+        self.assertEqual(self.gameboard.current_block_pos, pos)
+
+    def test_move_fail_left_blocks(self):
+        self.gameboard._board[-3] = [1, 1, 1, 1, 0, 0, 1, 1, 1, 1]
+        self.gameboard._board[-2] = [1, 1, 1, 1, 0, 0, 1, 1, 1, 1]
+        self.gameboard._board[-1] = [1, 1, 1, 1, 0, 0, 1, 1, 1, 1]
+        self.gameboard.current_block_pos = (self.gameboard._height-3 ,4)
+        pos = self.gameboard.current_block_pos
+        
+        # test target
+        self.gameboard.move(-1)
+        self.assertEqual(self.gameboard.current_block_pos, pos)
+
+class TestBlockRotate(unittest.TestCase):
+    def setUp(self):
+        self.gameboard = game.GameBoard()
+        self.gameboard.current_block = game.blocks.get_block('I')
+
+    def test_success(self):
+        block = self.gameboard.current_block
+        self.gameboard.rotate('left')
+        self.assertEqual(str(self.gameboard.current_block), str(block.rotate('left')))
+
+    def test_rotate_deposit(self):
+        self.gameboard.rotate('left')
+        self.gameboard.down()
+        self.assertEqual(self.gameboard._board[-1][5], 1)
+        self.assertEqual(self.gameboard._board[-1][6], 1)
+        self.assertEqual(self.gameboard._board[-1][7], 1)
+        self.assertEqual(self.gameboard._board[-1][8], 1)
+
+    def test_exception(self):
+        with self.assertRaises(ValueError):
+            self.gameboard.rotate('error_command')
+
+    def test_fail(self):
+        self.gameboard.current_block_pos = (self.gameboard.current_block_pos[0], self.gameboard.width - 1)
+        self.assertEqual(self.gameboard._conflict_detect(), State.AllGreen)
+        
+        block = self.gameboard.current_block
+        self.gameboard.rotate('left')
+        self.assertEqual(str(self.gameboard.current_block), str(block)) # reject rotate
+
+    def test_reject_rotate(self):
+        self.gameboard._board[-3] = [1, 1, 1, 1, 0, 0, 1, 1, 1, 1]
+        self.gameboard._board[-2] = [1, 1, 1, 1, 0, 0, 1, 1, 1, 1]
+        self.gameboard._board[-1] = [1, 1, 1, 1, 0, 0, 1, 1, 1, 1]
+
+        self.gameboard.current_block = game.blocks.get_block('S')
+        self.gameboard.rotate('left')
+        block = self.gameboard.current_block
+        self.gameboard.current_block_pos = (self.gameboard._height-3 ,4)
+
+        # test target
+        self.gameboard.rotate('left')
+
+        self.assertEqual(str(self.gameboard.current_block), str(block))
 
 
 class TestBoardHelperFunctions(unittest.TestCase):
