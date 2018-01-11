@@ -39,6 +39,7 @@ class GameBoard(object):
         self.next_block = blocks.random_block()
 
         self.freeze = False
+        self.score = 0
 
     # Game control related API
 
@@ -212,6 +213,8 @@ class GameBoard(object):
         for line in self._board:
             if not all(line):
                 remap.append(line)
+            else:
+                self.score = self.score + 1
 
         for idx, line in enumerate(reversed(remap)):
             self._board[-idx-1] = deepcopy(line)
