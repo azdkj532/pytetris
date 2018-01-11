@@ -148,7 +148,12 @@ class GameBoard(object):
 
     @property
     def board(self):
-        return deepcopy(self._board)
+        ret = deepcopy(self._board)
+        pos = self.current_block_pos
+        for x in range(4):
+            for y in range(4):
+                ret[pos[0]+x][pos[1]+y] = self.current_block[x, y]
+        return ret
 
     def clear(self):
         self._board = [[0 for y in range(self.width)] for x in range(self._height)]
