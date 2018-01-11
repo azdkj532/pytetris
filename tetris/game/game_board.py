@@ -152,7 +152,7 @@ class GameBoard(object):
         pos = self.current_block_pos
         for x in range(4):
             for y in range(4):
-                ret[pos[0]+x][pos[1]+y] = self.current_block[x, y]
+                ret[pos[0]+x][pos[1]+y] = ret[pos[0]+x][pos[1]+y] or (self.current_block[x, y] == 'O')
         return ret
 
     def clear(self):
